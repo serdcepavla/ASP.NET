@@ -26,7 +26,7 @@ namespace PromoCodeFactory.WebHost.Controllers
         /// <summary>
         /// Получить данные всех сотрудников
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Список сотрудников</returns>
         [HttpGet]
         public async Task<List<EmployeeShortResponse>> GetEmployeesAsync()
         {
@@ -44,9 +44,9 @@ namespace PromoCodeFactory.WebHost.Controllers
         }
 
         /// <summary>
-        /// Получить данные сотрудника по Id
+        /// Получить сотрудника по Id
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Сотрудник</returns>
         [HttpGet("{id:guid}")]
         public async Task<ActionResult<EmployeeResponse>> GetEmployeeByIdAsync(Guid id)
         {
@@ -72,10 +72,10 @@ namespace PromoCodeFactory.WebHost.Controllers
         }
 
         /// <summary>
-        /// Добавление сотрудника
+        /// Добавить сотрудника
         /// </summary>
         /// <param name="employeeForCreate"></param>
-        /// <returns></returns>
+        /// <returns>Добавленный сотрудник</returns>
         [HttpPost]
         public async Task<ActionResult<EmployeeResponse>> CreateEmployeeAsync(EmployeeCreateRequest employeeForCreate)
         {
@@ -112,10 +112,10 @@ namespace PromoCodeFactory.WebHost.Controllers
             return Ok(employeeModel);
         }
         /// <summary>
-        /// Измененние данных сотрудника
+        /// Изменить сотрудника
         /// </summary>
-        /// <param name="employeeForUpdate"></param>
-        /// <returns></returns>
+        /// <param name="employeeForUpdate">Сотрудник для изменения</param>
+        /// <returns>Данные сотрудника после обновления</returns>
         [HttpPut]
         public async Task<ActionResult<EmployeeResponse>> UpdateEmployeeAsync(EmployeeUpdateRequest employeeForUpdate)
         {
@@ -157,33 +157,33 @@ namespace PromoCodeFactory.WebHost.Controllers
         }
        
         /// <summary>
-        /// Удаление сотруднника по Id
+        /// Удалить сотруднника
         /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
+        /// <param name="id">Id удаляемого сотрудника</param>
+        /// <returns>Был ли сотрудник удален</returns>
         [HttpDelete("{id:guid}")]
-        public async Task<ActionResult<EmployeeResponse>> DeleteEmployeeByIdAsync(Guid id)
+        public async Task<bool> DeleteEmployeeByIdAsync(Guid id)
         {
             var employee = _employeeRepository.DeleteByIdAsync(id).Result;
 
             if (employee == null)
-                return NotFound();
+                return false;
             
-            // Возвращаем фантом удаленного сотрудника (возможно, в этом нет нужды, но никто не знает)
-            var employeeModel = new EmployeeResponse()
-            {
-                Id = employee.Id,
-                Email = employee.Email,
-                Roles = employee.Roles.Select(x => new RoleItemResponse()
-                {
-                    Name = x.Name,
-                    Description = x.Description
-                }).ToList(),
-                FullName = employee.FullName,
-                AppliedPromocodesCount = employee.AppliedPromocodesCount
-            };
+            //// Возвращаем фантом удаленного сотрудника (возможно, в этом нет нужды, но никто не знает)
+            //var employeeModel = new EmployeeResponse()
+            //{
+            //    Id = employee.Id,
+            //    Email = employee.Email,
+            //    Roles = employee.Roles.Select(x => new RoleItemResponse()
+            //    {
+            //        Name = x.Name,
+            //        Description = x.Description
+            //    }).ToList(),
+            //    FullName = employee.FullName,
+            //    AppliedPromocodesCount = employee.AppliedPromocodesCount
+            //};
 
-            return Ok(employeeModel);
+            return true;
         }
     }
 }

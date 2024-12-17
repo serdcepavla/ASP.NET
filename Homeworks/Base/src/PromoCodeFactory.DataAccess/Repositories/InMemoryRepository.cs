@@ -20,7 +20,7 @@ namespace PromoCodeFactory.DataAccess.Repositories
             return Task.FromResult(Data);
         }
 
-        public Task<T> GetByIdAsync(Guid id)
+        public Task<T>? GetByIdAsync(Guid id)
         {
             return Task.FromResult(Data.FirstOrDefault(x => x.Id == id));
         }
@@ -38,10 +38,6 @@ namespace PromoCodeFactory.DataAccess.Repositories
         public Task<T> CreateAsync(T entity)
         {
             entity.Id = Guid.NewGuid();
-            //Data = Data.Concat(new[] { entity });
-            //var dataList = Data.ToList();
-            //dataList.Add(entity);
-            //Data = dataList;
             Data = Data.Append(entity);
             return Task.FromResult(entity);
         }
@@ -49,7 +45,7 @@ namespace PromoCodeFactory.DataAccess.Repositories
         public Task<T> UpdateAsync(T entity) 
         {
             var dataList = Data.ToList();
-            
+
             var data = dataList.FirstOrDefault(x => x.Id == entity.Id);
             if (data == null)
                 return null;
