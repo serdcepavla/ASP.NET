@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PromoCodeFactory.Core.Abstractions.Repositories;
 using PromoCodeFactory.Core.Domain.Administration;
@@ -69,6 +70,81 @@ namespace PromoCodeFactory.WebHost.Controllers
             };
 
             return employeeModel;
+        }
+
+        /// <summary>
+        /// Добавление сотрудника
+        /// </summary>
+        /// <param name="employeeForCreate"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public async Task<ActionResult<EmployeeResponse>> CreateEmployeeAsync(EmployeeCreateRequest employeeForCreate)
+        {
+            // Создаем экземпляр сотрудника
+            Employee employee = new()
+            {
+                FirstName = employeeForCreate.FirstName,
+                LastName = employeeForCreate.LastName,
+                Email = employeeForCreate.Email,
+                AppliedPromocodesCount = employeeForCreate.AppliedPromocodesCount,
+                Roles = employeeForCreate.Roles
+            };
+
+            // Сохранняем экземпляр сотрудника в БД
+            if (_employeeRepository.CreateAsync(employee))
+                return Ok(employee);
+            else
+                return StatusCode(StatusCodes.Status500InternalServerError);
+        }
+        
+        /// <summary>
+        /// Измененние данных сотрудника
+        /// </summary>
+        /// <param name="employeeForUpdate"></param>
+        /// <returns></returns>
+        [HttpPut]
+        public async Task<ActionResult<EmployeeResponse>> UpdateEmployeeAsync(EmployeeUpdateRequest employeeForUpdate)
+        {
+            // Проверяем есть ли такой сотрудник в БД
+            var hasEmployee = await _employeeRepository.GetByIdAsync(employeeForUpdate.Id);
+            
+            if (hasEmployee == null)
+                return NotFound();
+
+            // Создаем экземпляр сотрудника
+            Employee employee = new()
+            {
+                Id = employeeForUpdate.Id,
+                FirstName = employeeForUpdate.FirstName,
+                LastName = employeeForUpdate.LastName,
+                Email = employeeForUpdate.Email,
+                AppliedPromocodesCount = employeeForUpdate.AppliedPromocodesCount,
+                Roles = employeeForUpdate.Roles
+            };
+            // Обновляем экземпляр сотрудника в БД
+            if (_employeeRepository.UpdateAsync(employee))
+                return Ok(employee);
+            else 
+                return StatusCode(StatusCodes.Status500InternalServerError);
+        }
+
+        /// <summary>
+        /// Удаление сотруднника по Id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpDelete("{id:guid}")]
+        public async Task<ActionResult> DeleteEmployeeByIdAsync(Guid id)
+        {
+            var hasEmployee = await _employeeRepository.GetByIdAsync(id);
+            
+            if (hasEmployee == null)
+                return NotFound();
+
+            if (_employeeRepository.DeleteByIdAsync(id))
+                return NoContent();
+            else
+                return StatusCode(StatusCodes.Status500InternalServerError);
         }
     }
 }

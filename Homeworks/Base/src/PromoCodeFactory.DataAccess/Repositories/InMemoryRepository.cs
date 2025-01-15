@@ -27,17 +27,45 @@ namespace PromoCodeFactory.DataAccess.Repositories
 
         public bool DeleteByIdAsync(Guid id)
         {
-            throw new NotImplementedException();
+            
+            T itemForDelete = Task.FromResult(_data.FirstOrDefault(x => x.Id == id)).Result;
+            if (itemForDelete != null)
+            {
+                _data.Remove(itemForDelete);
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
 
         public bool CreateAsync(T entity)
         {
-            throw new NotImplementedException();
+            if (entity != null)
+            {
+                entity.Id = Guid.NewGuid();
+                _data.Add(entity);
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
 
         public bool UpdateAsync(T entity)
         {
-            throw new NotImplementedException();
+            int index = _data.FindIndex(x => x.Id == entity.Id);
+            if (index > -1)
+            {
+                _data[index] = entity;
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
     }
 }
