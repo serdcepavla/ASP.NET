@@ -19,15 +19,15 @@ namespace PromoCodeFactory.DataAccess.Repositories
         {
             return Task.FromResult(_data);
         }
-
-        public Task<T> GetByIdAsync(Guid id)
+#nullable enable
+        public Task<T?> GetByIdAsync(Guid id)
         {
             return Task.FromResult(_data.FirstOrDefault(x => x.Id == id));
         }
-
+#nullable disable
         public bool DeleteByIdAsync(Guid id)
         {
-            
+           
             T itemForDelete = Task.FromResult(_data.FirstOrDefault(x => x.Id == id)).Result;
             if (itemForDelete != null)
             {
