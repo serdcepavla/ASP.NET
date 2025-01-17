@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -27,7 +28,7 @@ namespace PromoCodeFactory.WebHost.Controllers
         /// <summary>
         /// Получить данные всех сотрудников
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Список данных всех сотрудников</returns>
         [HttpGet]
         public async Task<List<EmployeeShortResponse>> GetEmployeesAsync()
         {
@@ -47,14 +48,14 @@ namespace PromoCodeFactory.WebHost.Controllers
         /// <summary>
         /// Получить данные сотрудника по Id
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Данные сотрудника</returns>
         [HttpGet("{id:guid}")]
         public async Task<ActionResult<EmployeeResponse>> GetEmployeeByIdAsync(Guid id)
         {
             var employee = await _employeeRepository.GetByIdAsync(id);
 
             if (employee == null)
-                return NotFound();
+                return NotFound("Не удалось найти сотрудника");
 
             var employeeModel = new EmployeeResponse()
             {
@@ -76,7 +77,7 @@ namespace PromoCodeFactory.WebHost.Controllers
         /// Добавление сотрудника
         /// </summary>
         /// <param name="employeeForCreate"></param>
-        /// <returns></returns>
+        /// <returns>Даннные добавленного сотрудника</returns>
         [HttpPost]
         public async Task<ActionResult<EmployeeResponse>> CreateEmployeeAsync(EmployeeCreateRequest employeeForCreate)
         {
@@ -91,17 +92,19 @@ namespace PromoCodeFactory.WebHost.Controllers
             };
 
             // Сохранняем экземпляр сотрудника в БД
-            if (_employeeRepository.CreateAsync(employee))
+            bool isCreated = await Task.FromResult(_employeeRepository.CreateAsync(employee));
+
+            if (isCreated)
                 return Ok(employee);
             else
-                return StatusCode(StatusCodes.Status500InternalServerError);
+                return StatusCode(StatusCodes.Status500InternalServerError, "Не удалось добавить сотрудника");
         }
         
         /// <summary>
         /// Измененние данных сотрудника
         /// </summary>
         /// <param name="employeeForUpdate"></param>
-        /// <returns></returns>
+        /// <returns>Измененные данные сотрудника</returns>
         [HttpPut]
         public async Task<ActionResult<EmployeeResponse>> UpdateEmployeeAsync(EmployeeUpdateRequest employeeForUpdate)
         {
@@ -109,7 +112,7 @@ namespace PromoCodeFactory.WebHost.Controllers
             var hasEmployee = await _employeeRepository.GetByIdAsync(employeeForUpdate.Id);
             
             if (hasEmployee == null)
-                return NotFound();
+                return NotFound("Не удалось найти сотрудника для изменения его данных");
 
             // Создаем экземпляр сотрудника
             Employee employee = new()
@@ -125,26 +128,26 @@ namespace PromoCodeFactory.WebHost.Controllers
             if (_employeeRepository.UpdateAsync(employee))
                 return Ok(employee);
             else 
-                return StatusCode(StatusCodes.Status500InternalServerError);
+                return StatusCode(StatusCodes.Status500InternalServerError, "Не удалось изменить данные сотрудника");
         }
 
         /// <summary>
         /// Удаление сотруднника по Id
         /// </summary>
         /// <param name="id"></param>
-        /// <returns></returns>
+        /// <returns>Результат удаления данных сотрудника</returns>
         [HttpDelete("{id:guid}")]
         public async Task<ActionResult> DeleteEmployeeByIdAsync(Guid id)
         {
             var hasEmployee = await _employeeRepository.GetByIdAsync(id);
             
             if (hasEmployee == null)
-                return NotFound();
+                return NotFound("Не удалось найти сотрудника для удаления его данных");
 
             if (_employeeRepository.DeleteByIdAsync(id))
                 return NoContent();
             else
-                return StatusCode(StatusCodes.Status500InternalServerError);
+                return StatusCode(StatusCodes.Status500InternalServerError, "Не удалось удалить данные сотрудника");
         }
     }
 }
