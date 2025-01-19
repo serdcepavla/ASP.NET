@@ -30,6 +30,54 @@ namespace PromoCodeFactory.DataAccess.Data
             },
         };
 
+        //public static IEnumerable<PromoCode> PromoCodes => new List<PromoCode>()
+        //{
+        //    new PromoCode() {
+        //        Id = Guid.Parse("6A2A2AED-49D8-4C8F-9C9A-160AC43DAD9D"),
+        //        BeginDate = DateTime.Now,
+        //        Code = "12345",
+        //        CustomerId = Guid.Parse("a6c8c6b1-4349-45b0-ab31-244740aaf0f0"),
+        //        EndDate = DateTime.Now,
+        //        PartnerManager =  Employees.FirstOrDefault(e => e.Role.Name == "PartnerManager"),
+        //        PartnerName = "OZON",
+        //        Preference = Preferences.FirstOrDefault(),
+        //        ServiceInfo = "Некий промокод"
+        //    }
+        //};
+
+
+        public static IEnumerable<PromoCode> PromoCodes =>
+            Enumerable.Range(1, 10)
+            .Select(i => new PromoCode()
+            {
+                Id = Guid.NewGuid(),
+                Code = $"PC-{i}",
+                ServiceInfo = $"Промокод на {(new Random()).Next(1, 99)}%",
+                BeginDate = DateTime.Now.AddDays(-1),
+                EndDate = DateTime.Today.AddDays(10),
+                PartnerName = "OZON",
+                PartnerManager = Employees.FirstOrDefault(e => e.Role.Name == "PartnerManager"),
+                Preference = Preferences.ToArray()[(new Random()).Next(Preferences.Count())],
+                CustomerId = Customers.ToArray()[(new Random()).Next(Customers.Count())].Id
+            }
+            )
+            .Union(
+                    Enumerable.Range(11, 15)
+                    .Select(i => new PromoCode()
+                    {
+                        Id = Guid.NewGuid(),
+                        Code = $"PC-{i}",
+                        ServiceInfo = $"Промокод на {(new Random()).Next(1, 99)}%",
+                        BeginDate = DateTime.Now.AddDays(-1),
+                        EndDate = DateTime.Today.AddDays(10),
+                        PartnerName = "Wildberries",
+                        PartnerManager = Employees.FirstOrDefault(e => e.Role.Name == "Admin"),
+                        Preference = Preferences.ToArray()[(new Random()).Next(Preferences.Count())],
+                        CustomerId = Customers.ToArray()[(new Random()).Next(Customers.Count())].Id
+                    }
+                    )
+                );
+
         public static IEnumerable<Role> Roles => new List<Role>()
         {
             new Role()
