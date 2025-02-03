@@ -6,6 +6,6 @@ namespace PromoCodeFactory.Core.Domain.PromoCodeManagement
         : BaseEntity
     {
         public string Name { get; set; }
-        public List<Customer> Customers { get; } = [];
+        //public List<Customer> Customers { get; } = [];
     }
 }

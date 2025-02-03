@@ -23,12 +23,29 @@ namespace PromoCodeFactory.DataAccess.Context
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            base.OnModelCreating(modelBuilder);
-
+            //base.OnModelCreating(modelBuilder);
+            
+            modelBuilder.Entity<Employee>()
+                .HasOne(c => c.Role);
+            modelBuilder.Entity<PromoCode>()
+                .HasOne(c => c.Preference);
+            modelBuilder.Entity<PromoCode>()
+                .HasOne(c => c.PartnerManager);
+            modelBuilder.Entity<Customer>()
+                .HasMany(c => c.PromoCodes)
+                .WithOne()
+                .IsRequired();
+            modelBuilder.Entity<Customer>()
+                .HasMany(c => c.Preferences)
+                .WithMany()
+                .UsingEntity<CustomerPreference>();
+            
             //Roles
             modelBuilder.Entity<Role>().HasData(FakeDataFactory.Roles);
 
             //Employee
+            //modelBuilder.Entity<Employee>().HasData(FakeDataFactory.Employees);
+            
             modelBuilder.Entity<Employee>().HasData(FakeDataFactory.Employees.Select(e => new
             {
                 e.Id,
@@ -39,31 +56,31 @@ namespace PromoCodeFactory.DataAccess.Context
                 e.AppliedPromocodesCount
             }));
 
-            //PromoCodes
-            modelBuilder.Entity<PromoCode>().HasData(FakeDataFactory.PromoCodes.Select(p => new
-            {
-                p.Id,
-                p.Code,
-                p.ServiceInfo,
-                p.BeginDate,
-                p.EndDate,
-                p.PartnerName,
-                PartnerManagerId = p.PartnerManager.Id,
-                PreferenceId = p.Preference.Id,
-                p.CustomerId
-            }));
+            // //PromoCodes
+            // modelBuilder.Entity<PromoCode>().HasData(FakeDataFactory.PromoCodes.Select(p => new
+            // {
+            //     p.Id,
+            //     p.Code,
+            //     p.ServiceInfo,
+            //     p.BeginDate,
+            //     p.EndDate,
+            //     p.PartnerName,
+            //     PartnerManagerId = p.PartnerManager.Id,
+            //     PreferenceId = p.Preference.Id,
+            //     p.CustomerId
+            // }));
 
-            //CustomerPreference
-            var custPrefList = FakeDataFactory.Customers
-                .SelectMany(c => c.Preferences,
-                 (c, p) => new { CustomerId = c.Id, PreferenceId = p.Id });
+            // //CustomerPreference
+            // var custPrefList = FakeDataFactory.Customers
+            //     .SelectMany(c => c.Preferences,
+            //      (c, p) => new { CustomerId = c.Id, PreferenceId = p.Id });
 
-            modelBuilder.Entity<Customer>()
-                .HasMany(c => c.Preferences)
-                .WithMany(p => p.Customers)
-                .UsingEntity<CustomerPreference>(j => j.HasData(custPrefList));
+            // modelBuilder.Entity<Customer>()
+            //     .HasMany(c => c.Preferences)
+            //     .WithMany(p => p.Customers)
+            //     .UsingEntity<CustomerPreference>(j => j.HasData(custPrefList));
 
-            modelBuilder.Entity<CustomerPreference>().Ignore(c => c.Id);
+            // modelBuilder.Entity<CustomerPreference>().Ignore(c => c.Id);
 
 
         }
