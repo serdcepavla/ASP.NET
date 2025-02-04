@@ -21,7 +21,7 @@ namespace PromoCodeFactory.WebHost
             var applicationSettings = configuration.Get<ApplicationSettings>();
             services.AddSingleton(applicationSettings)
                     .AddSingleton((IConfigurationRoot)configuration)
-                    .ConfigureContext(applicationSettings.ConnectionString)
+                    .ConfigureContext(configuration.GetConnectionString("Default"))
                     .InstallRepositories(configuration);
             return services;
         }

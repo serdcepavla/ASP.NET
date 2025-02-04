@@ -17,5 +17,7 @@ namespace PromoCodeFactory.Core.Domain.Administration
         public Role Role { get; set; }
 
         public int AppliedPromocodesCount { get; set; }
+        
+        public DateTime? Updated { get; set; }
     }
 }

@@ -57,8 +57,8 @@ namespace PromoCodeFactory.WebHost
                 app.UseDeveloperExceptionPage();
 
                 //recreate DB
-                context.Database.EnsureDeleted();
-                context.Database.EnsureCreated();
+                //context.Database.EnsureDeleted();
+                //context.Database.EnsureCreated();
 
             }
             else
