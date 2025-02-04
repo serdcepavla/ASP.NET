@@ -29,23 +29,30 @@ namespace PromoCodeFactory.DataAccess.Context
                 .HasOne(c => c.Role);
             modelBuilder.Entity<PromoCode>()
                 .HasOne(c => c.Preference);
+            
+            // Связь Customer и Promocode реализовать через One-To-Many
             modelBuilder.Entity<PromoCode>()
                 .HasOne(c => c.PartnerManager);
             modelBuilder.Entity<Customer>()
                 .HasMany(c => c.PromoCodes)
                 .WithOne()
                 .IsRequired();
+            
             modelBuilder.Entity<Customer>()
                 .HasMany(c => c.Preferences)
                 .WithMany()
                 .UsingEntity<CustomerPreference>();
             
             //Roles
+            modelBuilder.Entity<Role>().Property(r => r.Name).HasMaxLength(50);
+            modelBuilder.Entity<Role>().Property(r => r.Description).HasMaxLength(250);
             modelBuilder.Entity<Role>().HasData(FakeDataFactory.Roles);
 
             //Employee
             //modelBuilder.Entity<Employee>().HasData(FakeDataFactory.Employees);
-            
+            modelBuilder.Entity<Employee>().Property(r => r.FirstName).HasMaxLength(50);
+            modelBuilder.Entity<Employee>().Property(r => r.LastName).HasMaxLength(50);
+            modelBuilder.Entity<Employee>().Property(r => r.Email).HasMaxLength(50);
             modelBuilder.Entity<Employee>().HasData(FakeDataFactory.Employees.Select(e => new
             {
                 e.Id,
