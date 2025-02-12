@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using PromoCodeFactory.Core.Domain.Administration;
 using PromoCodeFactory.Core.Domain.PromoCodeManagement;
 
@@ -127,7 +128,18 @@ namespace PromoCodeFactory.DataAccess.Data
                         FirstName = "Иван",
                         LastName = "Петров",
                         //TODO: Добавить предзаполненный список предпочтений
+                        Preferences =  Preferences.Where( p => Regex.IsMatch(p.Name, @"Дети|Семья")).ToList()
+                    },
+                    new Customer()
+                    {
+                        Id = Guid.Parse("D54F3EFF-5B25-42F2-BDEA-067EC5130DC5"),
+                        Email = "lev_tolstoy@gmail.com",
+                        FirstName = "Лев",
+                        LastName = "Толстой",
+                        //TODO: Добавить предзаполненный список предпочтений
+                        Preferences =  Preferences.Where( p => Regex.IsMatch(p.Name, @"Бизнес|Театр")).ToList()
                     }
+
                 };
 
                 return customers;

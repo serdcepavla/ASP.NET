@@ -4,7 +4,9 @@ using PromoCodeFactory.Core.Domain;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace PromoCodeFactory.DataAccess.Repositories
@@ -28,6 +30,16 @@ namespace PromoCodeFactory.DataAccess.Repositories
         public async Task<T> GetByIdAsync(Guid id)
         {
             return await _entitySet.FindAsync(id);
+        }
+
+        public async Task<T> GetByIdAsync(Expression<Func<T, bool>> filter, string[] navProps)
+        {          
+            IQueryable<T> query = _entitySet;
+            
+            foreach (var entity in navProps)
+                query = query.Include(entity);
+
+            return await query.Where(filter).FirstOrDefaultAsync();
         }
 
         public async Task<T> CreateAsync(T entity)
@@ -62,10 +74,21 @@ namespace PromoCodeFactory.DataAccess.Repositories
             return true;
         }
 
-
+        /// <summary>
+        /// Сохранить изменения.
+        /// </summary>
         public void SaveChanges()
         {
             Context.SaveChanges();
         }
+
+        /// <summary>
+        /// Сохранить изменения асинхронно
+        /// </summary>
+        public async Task SaveChangesAsync(CancellationToken cancellationToken = default)
+        {
+            await Context.SaveChangesAsync(cancellationToken);
+        }
+
     }
 }

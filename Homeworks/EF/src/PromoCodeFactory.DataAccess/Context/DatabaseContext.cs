@@ -63,31 +63,31 @@ namespace PromoCodeFactory.DataAccess.Context
                 e.AppliedPromocodesCount
             }));
 
-            // //PromoCodes
-            // modelBuilder.Entity<PromoCode>().HasData(FakeDataFactory.PromoCodes.Select(p => new
-            // {
-            //     p.Id,
-            //     p.Code,
-            //     p.ServiceInfo,
-            //     p.BeginDate,
-            //     p.EndDate,
-            //     p.PartnerName,
-            //     PartnerManagerId = p.PartnerManager.Id,
-            //     PreferenceId = p.Preference.Id,
-            //     p.CustomerId
-            // }));
+            //PromoCodes
+            modelBuilder.Entity<PromoCode>().HasData(FakeDataFactory.PromoCodes.Select(p => new
+            {
+                p.Id,
+                p.Code,
+                p.ServiceInfo,
+                p.BeginDate,
+                p.EndDate,
+                p.PartnerName,
+                PartnerManagerId = p.PartnerManager.Id,
+                PreferenceId = p.Preference.Id,
+                p.CustomerId
+            }));
 
-            // //CustomerPreference
-            // var custPrefList = FakeDataFactory.Customers
-            //     .SelectMany(c => c.Preferences,
-            //      (c, p) => new { CustomerId = c.Id, PreferenceId = p.Id });
+            //CustomerPreference
+            var custPrefList = FakeDataFactory.Customers
+                .SelectMany(c => c.Preferences,
+                 (c, p) => new { CustomerId = c.Id, PreferenceId = p.Id });
 
             // modelBuilder.Entity<Customer>()
             //     .HasMany(c => c.Preferences)
             //     .WithMany(p => p.Customers)
             //     .UsingEntity<CustomerPreference>(j => j.HasData(custPrefList));
 
-            // modelBuilder.Entity<CustomerPreference>().Ignore(c => c.Id);
+            //modelBuilder.Entity<CustomerPreference>().Ignore(c => c.Id);
 
 
         }

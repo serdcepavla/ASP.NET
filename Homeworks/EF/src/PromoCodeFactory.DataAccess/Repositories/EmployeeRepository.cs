@@ -1,4 +1,5 @@
-﻿using PromoCodeFactory.Core.Abstractions.Repositories;
+﻿using Microsoft.EntityFrameworkCore;
+using PromoCodeFactory.Core.Abstractions.Repositories;
 using PromoCodeFactory.Core.Domain.Administration;
 using PromoCodeFactory.DataAccess.Context;
 using System;
@@ -16,6 +17,11 @@ namespace PromoCodeFactory.DataAccess.Repositories
     {
         public EmployeeRepository(DatabaseContext context) : base(context) { }
 
-
+        public async Task<Employee> GetByIdAsync(Guid id)
+        {
+            var query = Context.Set<Employee>().AsQueryable();
+            query = query.Where(e => e.Id == id).Include(e => e.Role);
+            return await query.SingleOrDefaultAsync(); // _entitySet.FindAsync(id);
+        }
     }
 }
