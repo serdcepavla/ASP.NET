@@ -14,6 +14,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using PromoCodeFactory.WebHost.Settings;
 using Microsoft.EntityFrameworkCore.Infrastructure.Internal;
+using PromoCodeFactory.Core.Domain;
 
 namespace PromoCodeFactory.WebHost
 {
@@ -30,15 +31,15 @@ namespace PromoCodeFactory.WebHost
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
-            
-            // services.AddScoped(typeof(IRepository<Employee>), (x) =>
-            //     new InMemoryRepository<Employee>(FakeDataFactory.Employees));
-            // services.AddScoped(typeof(IRepository<Role>), (x) =>
-            //     new InMemoryRepository<Role>(FakeDataFactory.Roles));
-            // services.AddScoped(typeof(IRepository<Preference>), (x) =>
-            //     new InMemoryRepository<Preference>(FakeDataFactory.Preferences));
-            // services.AddScoped(typeof(IRepository<Customer>), (x) =>
-            //     new InMemoryRepository<Customer>(FakeDataFactory.Customers));
+
+            //services.AddScoped(typeof(IRepository<Employee>), (x) =>
+            //    new InMemoryRepository<Employee>(FakeDataFactory.Employees));
+            //services.AddScoped(typeof(IRepository<Role>), (x) =>
+            //    new InMemoryRepository<Role>(FakeDataFactory.Roles));
+            //services.AddScoped(typeof(IRepository<Preference>), (x) =>
+            //    new InMemoryRepository<Preference>(FakeDataFactory.Preferences));
+            //services.AddScoped(typeof(IRepository<Customer>), (x) =>
+            //    new InMemoryRepository<Customer>(FakeDataFactory.Customers));
 
             services.AddOpenApiDocument(options =>
             {
@@ -46,7 +47,12 @@ namespace PromoCodeFactory.WebHost
                 options.Version = "1.0";
             });
 
-            services.AddServices(Configuration);
+            services.AddSingleton(Configuration.Get<ApplicationSettings>())
+                    .AddSingleton((IConfigurationRoot)Configuration)
+                    .AddDbContext<DatabaseContext>(option => option
+                        .UseSqlite(Configuration.GetConnectionString("Default")))
+                    .AddScoped(typeof(IRepository<>), typeof(EfRepository<>));
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

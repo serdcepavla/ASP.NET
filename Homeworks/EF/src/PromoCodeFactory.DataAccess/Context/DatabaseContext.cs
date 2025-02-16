@@ -10,10 +10,8 @@ using System.Threading.Tasks;
 
 namespace PromoCodeFactory.DataAccess.Context
 {
-    public class DatabaseContext : DbContext
+    public class DatabaseContext(DbContextOptions<DatabaseContext> options) : DbContext(options)
     {
-        public DatabaseContext(DbContextOptions<DatabaseContext> options) : base(options) { }
-
         public DbSet<Employee> Employees { get; set; }
         public DbSet<Role> Roles { get; set; }
         public DbSet<Customer> Customers { get; set; }
@@ -43,44 +41,46 @@ namespace PromoCodeFactory.DataAccess.Context
                 .WithMany()
                 .UsingEntity<CustomerPreference>();
             
-            //Roles
-            modelBuilder.Entity<Role>().Property(r => r.Name).HasMaxLength(50);
-            modelBuilder.Entity<Role>().Property(r => r.Description).HasMaxLength(250);
-            modelBuilder.Entity<Role>().HasData(FakeDataFactory.Roles);
+            //modelBuilder.Entity<Preference>().HasData(FakeDataFactory.Preferences);
 
-            //Employee
-            //modelBuilder.Entity<Employee>().HasData(FakeDataFactory.Employees);
-            modelBuilder.Entity<Employee>().Property(r => r.FirstName).HasMaxLength(50);
-            modelBuilder.Entity<Employee>().Property(r => r.LastName).HasMaxLength(50);
-            modelBuilder.Entity<Employee>().Property(r => r.Email).HasMaxLength(50);
-            modelBuilder.Entity<Employee>().HasData(FakeDataFactory.Employees.Select(e => new
-            {
-                e.Id,
-                e.FirstName,
-                e.LastName,
-                e.Email,
-                RoleId = e.Role.Id,
-                e.AppliedPromocodesCount
-            }));
+            // //Roles
+            // modelBuilder.Entity<Role>().Property(r => r.Name).HasMaxLength(50);
+            // modelBuilder.Entity<Role>().Property(r => r.Description).HasMaxLength(250);
+            // modelBuilder.Entity<Role>().HasData(FakeDataFactory.Roles);
 
-            //PromoCodes
-            modelBuilder.Entity<PromoCode>().HasData(FakeDataFactory.PromoCodes.Select(p => new
-            {
-                p.Id,
-                p.Code,
-                p.ServiceInfo,
-                p.BeginDate,
-                p.EndDate,
-                p.PartnerName,
-                PartnerManagerId = p.PartnerManager.Id,
-                PreferenceId = p.Preference.Id,
-                p.CustomerId
-            }));
+            // //Employee
+            // //modelBuilder.Entity<Employee>().HasData(FakeDataFactory.Employees);
+            // modelBuilder.Entity<Employee>().Property(r => r.FirstName).HasMaxLength(50);
+            // modelBuilder.Entity<Employee>().Property(r => r.LastName).HasMaxLength(50);
+            // modelBuilder.Entity<Employee>().Property(r => r.Email).HasMaxLength(50);
+            // modelBuilder.Entity<Employee>().HasData(FakeDataFactory.Employees.Select(e => new
+            // {
+            //     e.Id,
+            //     e.FirstName,
+            //     e.LastName,
+            //     e.Email,
+            //     RoleId = e.Role.Id,
+            //     e.AppliedPromocodesCount
+            // }));
 
-            //CustomerPreference
-            var custPrefList = FakeDataFactory.Customers
-                .SelectMany(c => c.Preferences,
-                 (c, p) => new { CustomerId = c.Id, PreferenceId = p.Id });
+            // //PromoCodes
+            // modelBuilder.Entity<PromoCode>().HasData(FakeDataFactory.PromoCodes.Select(p => new
+            // {
+            //     p.Id,
+            //     p.Code,
+            //     p.ServiceInfo,
+            //     p.BeginDate,
+            //     p.EndDate,
+            //     p.PartnerName,
+            //     PartnerManagerId = p.PartnerManager.Id,
+            //     PreferenceId = p.Preference.Id,
+            //     p.CustomerId
+            // }));
+
+            // //CustomerPreference
+            // var custPrefList = FakeDataFactory.Customers
+            //     .SelectMany(c => c.Preferences,
+            //      (c, p) => new { CustomerId = c.Id, PreferenceId = p.Id });
 
             // modelBuilder.Entity<Customer>()
             //     .HasMany(c => c.Preferences)

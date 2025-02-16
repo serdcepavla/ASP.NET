@@ -11,12 +11,12 @@ using System.Threading.Tasks;
 
 namespace PromoCodeFactory.DataAccess.Repositories
 {
-    public abstract class EfRepository<T> : IRepository<T> where T: BaseEntity
+    public class EfRepository<T> : IRepository<T> where T: BaseEntity
     {
         protected readonly DbContext Context;
         private readonly DbSet<T> _entitySet;
 
-        protected EfRepository(DbContext context)
+        public EfRepository(DbContext context)
         {
             Context = context;
             _entitySet = Context.Set<T>();
@@ -88,6 +88,20 @@ namespace PromoCodeFactory.DataAccess.Repositories
         public async Task SaveChangesAsync(CancellationToken cancellationToken = default)
         {
             await Context.SaveChangesAsync(cancellationToken);
+        }
+        /// <summary>
+        /// Найти по условию
+        /// </summary>
+        /// <typeparam name="T">Тип сущности</typeparam>
+        /// <param name="predicate">Условие поиска</param>
+        /// <returns>Интерфейс для запроса данных</returns>
+        /// <exception cref="ArgumentNullException"></exception>
+        public virtual IQueryable<T> FindAllWhere<T>(Expression<Func<T, bool>> predicate) where T : class
+        {
+            if (predicate == null)
+                throw new ArgumentNullException("Predicate value must be passed to FindAllBy<T>.");
+
+            return Context.Set<T>().Where(predicate);
         }
 
     }
