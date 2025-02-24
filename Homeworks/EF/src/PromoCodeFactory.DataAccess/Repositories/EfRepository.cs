@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using PromoCodeFactory.Core.Abstractions.Repositories;
@@ -55,5 +56,11 @@ public class EfRepository<T> : IRepository<T> where T : BaseEntity
         Context.Entry(entity).State = EntityState.Modified;
         await Context.SaveChangesAsync();
         return true;
+    }
+
+    public async Task<IEnumerable<T>> GetRangeByIdsAsync(List<Guid> ids)
+    {
+        var entities = await Context.Set<T>().Where(x => ids.Contains(x.Id)).ToListAsync();
+        return entities;
     }
 }

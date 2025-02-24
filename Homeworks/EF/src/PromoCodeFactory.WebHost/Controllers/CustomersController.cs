@@ -20,10 +20,13 @@ namespace PromoCodeFactory.WebHost.Controllers
         : ControllerBase
     {
         private readonly IRepository<Customer> _customerRepository;
+        private readonly IRepository<Preference> _preferenceRepository;
 
-        public CustomersController(IRepository<Customer> customerRepository)
+        public CustomersController(IRepository<Customer> customerRepository,
+            IRepository<Preference> preferenceRepository)
         {
             _customerRepository = customerRepository;
+            _preferenceRepository = preferenceRepository;
         }
 
         /// <summary>
@@ -134,13 +137,18 @@ namespace PromoCodeFactory.WebHost.Controllers
             if (customer == null)
                 return NotFound(id);
 
+            var preferences = await _preferenceRepository.GetRangeByIdsAsync(request.PreferenceIds);
+
             customer.LastName = request.LastName;
             customer.FirstName = request.FirstName;
             customer.Email = request.Email;
-            
-            customer.CustomerPreferences = request.PreferenceIds
-                 .Select(pid => new CustomerPreference { CustomerId = customer.Id, PreferenceId = pid })
-                 .ToList();
+
+            customer.CustomerPreferences.Clear();
+            customer.CustomerPreferences = preferences.Select(x => new CustomerPreference()
+            {
+                Customer = customer,
+                Preference = x
+            }).ToList();
 
             await _customerRepository.UpdateAsync(customer);
 
