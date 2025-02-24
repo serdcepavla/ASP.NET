@@ -12,6 +12,8 @@ namespace PromoCodeFactory.Core.Domain.Administration
 
         public string Description { get; set; }
 
+        public DateTime? CreateDate { get; set; }
+
         public virtual ICollection<Employee> Employees { get; set; }
     }
 }
