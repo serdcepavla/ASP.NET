@@ -1,5 +1,7 @@
 ﻿using PromoCodeFactory.Core.Domain;
 using System;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace PromoCodeFactory.Core.Domain.Administration
 {
@@ -9,5 +11,7 @@ namespace PromoCodeFactory.Core.Domain.Administration
         public string Name { get; set; }
 
         public string Description { get; set; }
+
+        public virtual ICollection<Employee> Employees { get; set; }
     }
 }
